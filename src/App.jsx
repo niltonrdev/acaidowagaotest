@@ -13,6 +13,11 @@ import acaiimg5 from './assets/acai5.jpeg';
 import barca from './assets/barca.jpeg';
 import litro from './assets/litro.jpeg';
 import cakeImage from './assets/cake_generic.jpeg'; 
+import cenoura from './assets/cenoura_chocolate.jpeg';
+import ninho_nutella from './assets/ninho_nutella.jpeg'; 
+import oreo from './assets/oreo.jpeg'; 
+
+
 
 // Importações do Firebase
 import { initializeApp } from 'firebase/app';
@@ -28,12 +33,17 @@ const ACAL_OPTIONS = [
     { type: '1L', title: 'Açaí - 1 Litro', price: 40.00, image: litro },
     { type: 'Barca 550ml', title: 'Barca 550ml', price: 25.00, image: barca },
 ];
-
+const IMAGE_MAP = {
+    cakeImage: cakeImage,
+    cenoura: cenoura,
+    ninho_nutella: ninho_nutella,
+    oreo: oreo,
+};
 const CAKE_OPTIONS = [
-    { id: 'bolo1', titulo: 'Bolo de Cenoura com Brigadeiro', descricao: 'Massa fofinha de cenoura com uma generosa cobertura de brigadeiro. Serve até 3 pessoas (aprox. 800g)', preco: 23.90, image: 'cakeImage', type: 'Bolo' },
-    { id: 'bolo2', titulo: 'Bolo Sensação', descricao: 'Delicioso bolo de chocolate com cobertura de brigadeiro e pedaços de morango.', preco: 24.90, image: 'cakeImage', type: 'Bolo' },
-    { id: 'bolo3', titulo: 'Bolo de Ninho com Morango', descricao: 'Nosso bolo vulcão artesanal é composto de massa de chocolate. Serve até 3 pessoas (aprox. 700g)', preco: 27.90, image: 'cakeImage', type: 'Bolo' },
-    { id: 'bolo4', titulo: 'Bolo de Ninho com Nutella', descricao: 'Massa super fofinha de chocolate com cobertura cremosa de Ninho com Nutella.', preco: 29.90, image: 'cakeImage', type: 'Bolo' },
+    { id: 'bolo1', titulo: 'Bolo de Cenoura com Brigadeiro', descricao: 'Massa fofinha de cenoura com uma generosa cobertura de brigadeiro. Serve até 3 pessoas (aprox. 800g)', preco: 20.00, image: 'cenoura', type: 'Bolo' },
+    { id: 'bolo2', titulo: 'Bolo de Biscoito Oreo', descricao: 'Delicioso bolo de biscoito oreo.', preco: 20.00, image: 'oreo', type: 'Bolo' },
+    { id: 'bolo3', titulo: 'Bolo de Ninho com Morango', descricao: 'Nosso bolo vulcão artesanal é composto de massa de chocolate. Serve até 3 pessoas (aprox. 700g)', preco: 20.00, image: 'cakeImage', type: 'Bolo' },
+    { id: 'bolo4', titulo: 'Bolo de Ninho com Nutella', descricao: 'Massa super fofinha de chocolate com cobertura cremosa de Ninho com Nutella.', preco: 25.00, image: 'ninho_nutella', type: 'Bolo' },
 ];
 // -----------------------------
 
@@ -241,7 +251,7 @@ const firebaseConfig = {
                         <CakePrice>R$ {cake.preco.toFixed(2)}</CakePrice>
                     </CakeTextContent>
                     {/* Usando a imagem genérica importada */}
-                    <CakeImageItem src={cakeImage} alt={cake.titulo} /> 
+                    <CakeImageItem src={IMAGE_MAP[cake.image]} alt={cake.titulo} /> 
                 </CakeItemContainer>
             ))}
         </CakeMenuContainer>
