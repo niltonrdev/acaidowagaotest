@@ -16,36 +16,36 @@ const sendWhatsAppMessage = ({
   pagamento,
   downloadLink
 }) => {
-  let message = `*NOVO PEDIDO - AÇAÍ DO WAGÃO*\\n\\n`;
-  message += `*Cliente:* ${nome}\\n`;
-  message += `*Telefone:* ${telefone}\\n`;
-  message += `*Endereço:* ${endereco}\\n`;
-  message += `*Forma de Pagamento:* ${pagamento}\\n`;
+  let message = `🍇 NOVO PEDIDO - AÇAÍ DO WAGÃO 🍇\n\n`;
+  message += `Cliente: ${nome}\n`;
+  message += `Telefone: ${telefone}\n`;
+  message += `Endereço: ${endereco}\n`;
+  message += `Forma de Pagamento: ${pagamento}\n`;
   if (observacao) {
-    message += `*Observações:* ${observacao}\\n`;
+    message += `*Observações:* ${observacao}\n`;
   }
-  message += `\\n*ITENS:*\\n`;
+  message += `\n*ITENS:*\n`;
 
   pedidos.forEach((pedido, index) => {
-    // LÓGICA ATUALIZADA AQUI: Verifica o tipo de produto
+    // Verifica o tipo de produto
     if (pedido.tipoProduto === 'Bolo') {
-      message += `\\n*Item ${index + 1}:* ${pedido.tamanho} (Bolo Vulcão) - R$ ${pedido.preco.toFixed(2)}\\n`;
+      message += `\n*Item ${index + 1}:* ${pedido.tamanho} (Bolo Vulcão) - R$ ${pedido.preco.toFixed(2)}\n`;
     } else {
       // Pedido de Açaí
-      message += `\\n*Item ${index + 1}:* Açaí ${pedido.tamanho} - R$ ${pedido.preco.toFixed(2)}\\n`;
-      if (pedido.creme) message += `  - Creme: ${pedido.creme}\\n`;
-      if (pedido.frutas.length > 0) message += `  - Frutas: ${pedido.frutas.join(', ')}\\n`;
-      if (pedido.complementos.length > 0) message += `  - Complementos: ${pedido.complementos.join(', ')}\\n`;
-      if (pedido.adicionais.length > 0) message += `  - Adicionais: ${pedido.adicionais.join(', ')}\\n`;
-      if (pedido.caldas) message += `  - Calda: ${pedido.caldas}\\n`;
+      message += `\n*Item ${index + 1}:* Açaí ${pedido.tamanho} - R$ ${pedido.preco.toFixed(2)}\n`;
+      if (pedido.creme) message += `  - Creme: ${pedido.creme}\n`;
+      if (pedido.frutas.length > 0) message += `  - Frutas: ${pedido.frutas.join(', ')}\n`;
+      if (pedido.complementos.length > 0) message += `  - Complementos: ${pedido.complementos.join(', ')}\n`;
+      if (pedido.adicionais.length > 0) message += `  - Adicionais: ${pedido.adicionais.join(', ')}\n`;
+      if (pedido.caldas) message += `  - Calda: ${pedido.caldas}\n`;
     }
   });
 
-  message += `\\n*Subtotal:* R$ ${totalPrice.toFixed(2)}\\n`;
-  message += `*Frete:* R$ ${frete.toFixed(2)}\\n`;
-  message += `*TOTAL A PAGAR:* R$ ${(totalPrice + frete).toFixed(2)}\\n`;
-  message += `\\n*Comprovante para impressão:* ${downloadLink}\\n`;
-  message += `\\n*ATENÇÃO:* Clique em ENVIAR no WhatsApp para finalizar seu pedido!`;
+  message += `\n*Subtotal:* R$ ${totalPrice.toFixed(2)}\n`;
+  message += `*Frete:* R$ ${frete.toFixed(2)}\n`;
+  message += `*TOTAL A PAGAR:* R$ ${(totalPrice + frete).toFixed(2)}\n`;
+  message += `\n*Comprovante para impressão:* ${downloadLink}\n`;
+  message += `\n*ATENÇÃO:* Clique em ENVIAR no WhatsApp para finalizar seu pedido!`;
 
   const whatsappUrl = `https://wa.me/5561990449507?text=${encodeURIComponent(message)}`; //5561991672740
   window.open(whatsappUrl, '_blank');

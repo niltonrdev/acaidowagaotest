@@ -20,7 +20,6 @@ export const sendWhatsAppMessage = ({
   
   message += `🛒 ITENS:\n\n`;
   pedidos.forEach((pedido, index) => {
-      // --- LÓGICA ATUALIZADA AQUI ---
       if (pedido.tipoProduto === 'Bolo') {
           message += `Item ${index + 1}: ${pedido.tamanho} (Bolo Vulcão) - R$ ${pedido.preco.toFixed(2)}\n\n`;
       } else {

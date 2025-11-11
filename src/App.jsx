@@ -12,12 +12,7 @@ import acaiimg4 from './assets/acai4.jpeg';
 import acaiimg5 from './assets/acai5.jpeg';
 import barca from './assets/barca.jpeg';
 import litro from './assets/litro.jpeg';
-
-// Importe uma imagem genérica para os bolos (você irá alterá-la depois)
 import cakeImage from './assets/cake_generic.jpeg'; 
-// OBS: Você deve criar um arquivo de imagem em './assets/cake_generic.jpeg'
-// Para a demonstração, usei uma URL da internet:
-// const cakeImage = "https://images.unsplash.com/photo-1542826433-2195f2a1b98a"; 
 
 // Importações do Firebase
 import { initializeApp } from 'firebase/app';
@@ -251,8 +246,23 @@ const firebaseConfig = {
             ))}
         </CakeMenuContainer>
     );
-
-    const menuContent = selectedTab === 'Açaí do Wagão' ? renderAcaiMenu() : renderCakeMenu();
+    const scrollToSection = (id) => {
+        // 1. Encontrar o elemento pelo ID
+        const section = document.getElementById(id);
+        if (section) {
+            // 2. Rolar para a seção com animação suave
+            section.scrollIntoView({
+                behavior: 'smooth', 
+                block: 'start'      
+            });
+        }
+        if (id === 'acai-section') {
+            setSelectedTab('Açaí do Wagão');
+        } else if (id === 'bolos-section') {
+            setSelectedTab('Bolos Vulcões');
+        }
+    };
+    //const menuContent = selectedTab === 'Açaí do Wagão' ? renderAcaiMenu() : renderCakeMenu();
 
     return (
         <>
@@ -263,13 +273,13 @@ const firebaseConfig = {
                 <TabBar>
                     <TabButton 
                         active={selectedTab === 'Açaí do Wagão'} 
-                        onClick={() => setSelectedTab('Açaí do Wagão')}
+                        onClick={() => scrollToSection('acai-section')}
                     >
                         Açaí do Wagão
                     </TabButton>
                     <TabButton 
                         active={selectedTab === 'Bolos Vulcões'} 
-                        onClick={() => setSelectedTab('Bolos Vulcões')}
+                        onClick={() => scrollToSection('bolos-section')}
                     >
                         Bolos Vulcões
                     </TabButton>
@@ -281,7 +291,12 @@ const firebaseConfig = {
             ) : (
                 <>
                     <Content>
-                        {menuContent}
+                        <SectionContainer id="acai-section">
+                            {renderAcaiMenu()}
+                        </SectionContainer>
+                        <SectionContainer id="bolos-section">
+                            {renderCakeMenu()}
+                        </SectionContainer>
                     </Content>
 
                     {/* Modal de Açaí (Seu Modal.jsx) */}
@@ -361,7 +376,9 @@ const TabBar = styled.div`
     white-space: nowrap;
     border-bottom: 1px solid #ddd;
     /* Para fixar a barra abaixo do HeaderLogo */
-    position: sticky; 
+    position: fixed;
+    width: 100%; 
+    left: 0;
     top: 150px; /* Altura do LogoWrapper desktop */
     z-index: 998;
     
@@ -529,4 +546,8 @@ const CakeImageItem = styled.img`
         width: 80px;
         height: 80px;
     }
+`;
+const SectionContainer = styled.div`
+  /* Apenas um wrapper para dar o ID */
+  padding-bottom: 30px; /* Espaçamento entre as seções se necessário */
 `;
