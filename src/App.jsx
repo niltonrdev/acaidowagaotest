@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import HeaderLogo from './components/Header/HeaderLogo.jsx';
 import AcaiModal from './components/Body/Modal.jsx'; // Seu Modal.jsx
 import CakeModal from './components/Body/CakeModal.jsx'; // Novo modal de bolo
+import DessertModal from './components/Body/DessertModal.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import CheckoutForm from './components/Checkout/CheckoutForm.jsx';
 import Download from './components/Download/Download.jsx';
@@ -12,12 +13,17 @@ import acaiimg4 from './assets/acai4.jpeg';
 import acaiimg5 from './assets/acai5.jpeg';
 import barca from './assets/barca.jpeg';
 import litro from './assets/litro.jpeg';
-import cakeImage from './assets/cake_generic.jpeg'; 
 import cenoura from './assets/cenoura_chocolate.jpeg';
 import ninho_nutella from './assets/ninho_nutella.jpeg'; 
 import oreo from './assets/oreo.jpeg'; 
-
-
+import sensacao from './assets/sensacao.jpeg'; 
+import ninho_morango from './assets/ninho_morango.jpeg'; 
+import kinder from './assets/kinder.jpeg'; 
+import combo_01 from './assets/combo_01.jpeg'; 
+import brownie from './assets/brownie.jpeg'; 
+import brig_ninho_morango from './assets/brig_ninho_morango.jpeg'; 
+import brig_ninho_nutella from './assets/brig_ninho_nutella.jpeg'; 
+import shake from './assets/shake_acai.jpeg';  
 
 // Importações do Firebase
 import { initializeApp } from 'firebase/app';
@@ -33,17 +39,51 @@ const ACAL_OPTIONS = [
     { type: '1L', title: 'Açaí - 1 Litro', price: 40.00, image: litro },
     { type: 'Barca 550ml', title: 'Barca 550ml', price: 25.00, image: barca },
 ];
+const SHAKE_OPTION = { 
+    id: 'shake1', 
+    titulo: 'Shake de Açaí', 
+    descricao: 'Shake de Açaí (Pronto, sem adicionais)', 
+    preco: 16.00, 
+    image: shake, 
+    type: 'Shake' 
+};
 const IMAGE_MAP = {
-    cakeImage: cakeImage,
     cenoura: cenoura,
     ninho_nutella: ninho_nutella,
     oreo: oreo,
+    sensacao: sensacao,
+    ninho_morango: ninho_morango,
+    kinder: kinder,
 };
 const CAKE_OPTIONS = [
-    { id: 'bolo1', titulo: 'Bolo de Cenoura com Brigadeiro', descricao: 'Massa fofinha de cenoura com uma generosa cobertura de brigadeiro. Serve até 3 pessoas (aprox. 800g)', preco: 20.00, image: 'cenoura', type: 'Bolo' },
+    { id: 'bolo1', titulo: 'Bolo de Cenoura com Brigadeiro', descricao: 'Massa fofinha de cenoura com uma generosa cobertura de brigadeiro.', preco: 20.00, image: 'cenoura', type: 'Bolo' },
     { id: 'bolo2', titulo: 'Bolo de Biscoito Oreo', descricao: 'Delicioso bolo de biscoito oreo.', preco: 20.00, image: 'oreo', type: 'Bolo' },
-    { id: 'bolo3', titulo: 'Bolo de Ninho com Morango', descricao: 'Nosso bolo vulcão artesanal é composto de massa de chocolate. Serve até 3 pessoas (aprox. 700g)', preco: 20.00, image: 'cakeImage', type: 'Bolo' },
+    { id: 'bolo3', titulo: 'Bolo de Ninho com Morango', descricao: 'Nosso bolo vulcão artesanal é composto de massa de chocolate, recheado no centro com morangos e coberto por uma calda de Ninho.', preco: 20.00, image: 'ninho_morango', type: 'Bolo' },
     { id: 'bolo4', titulo: 'Bolo de Ninho com Nutella', descricao: 'Massa super fofinha de chocolate com cobertura cremosa de Ninho com Nutella.', preco: 25.00, image: 'ninho_nutella', type: 'Bolo' },
+    { id: 'bolo5', titulo: 'Bolo Sensação', descricao: 'Delicioso bolo de chocolate com cobertura de brigadeiro e pedaços de morango fresco.', preco: 20.00, image: 'sensacao', type: 'Bolo' },
+    { id: 'bolo6', titulo: 'Bolo de Kinder Bueno', descricao: 'Massa de chocolate, pedaços de Kinder Bueno e cobertura.', preco: 27.00, image: 'kinder', type: 'Bolo' },
+];
+const COMBO_OPTIONS = [
+    { 
+        id: 'combo1', 
+        titulo: 'Combo Especial', 
+        descricao: '2 tortas de frango + 1 bolo de sua escolha + 2 refrigerantes', 
+        preco: 45.00, 
+        image: combo_01, 
+        type: 'Combo' 
+    },
+];
+const DESSERT_OPTIONS = [
+    { id: 'dessert1', titulo: 'Brownie Tradicional', descricao: 'Delicioso Brownie tradicional', preco: 13.00, image: brownie, type: 'Sobremesa' },
+    { id: 'dessert2', titulo: 'Brigadeiro de Ninho c/ Morango', descricao: 'Brigadeiro de colher de Ninho com morango', preco: 14.00, image: brig_ninho_morango, type: 'Sobremesa' },
+    { 
+        id: 'dessert3', 
+        titulo: 'Brigadeiro de Ninho c/ Nutella', 
+        descricao: 'Brigadeiro de ninho com nutella (Escolha uma fruta: uva ou morango, informe qual na observação)', 
+        preco: 17.00, 
+        image: brig_ninho_nutella,
+        type: 'Sobremesa' 
+    },
 ];
 // -----------------------------
 
@@ -60,12 +100,12 @@ const firebaseConfig = {
     const appId = firebaseConfig.appId;
     
     // Estados da aplicação
-    const [selectedTab, setSelectedTab] = useState('Açaí do Wagão'); // NOVO: Estado para a aba
+    const [selectedTab, setSelectedTab] = useState('Açaí do Wagão'); 
     const [isAcaiModalOpen, setIsAcaiModalOpen] = useState(false);
-    const [isCakeModalOpen, setIsCakeModalOpen] = useState(false); // NOVO: Estado para o modal de bolo
+    const [isCakeModalOpen, setIsCakeModalOpen] = useState(false); 
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
     const [selectedAcai, setSelectedAcai] = useState(null);
-    const [selectedCake, setSelectedCake] = useState(null); // NOVO: Estado para o bolo selecionado
+    const [selectedCake, setSelectedCake] = useState(null); 
     const [selectedOptions, setSelectedOptions] = useState({
         creme: null,
         frutas: [],
