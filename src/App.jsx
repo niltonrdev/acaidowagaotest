@@ -3,6 +3,8 @@ import HeaderLogo from './components/Header/HeaderLogo.jsx';
 import AcaiModal from './components/Body/Modal.jsx'; // Seu Modal.jsx
 import CakeModal from './components/Body/CakeModal.jsx'; // Novo modal de bolo
 import DessertModal from './components/Body/DessertModal.jsx';
+import ComboModal from './components/Body/ComboModal.jsx';
+import SimpleConfirmModal from './components/Body/SimpleConfirmModal.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import CheckoutForm from './components/Checkout/CheckoutForm.jsx';
 import Download from './components/Download/Download.jsx';
@@ -106,6 +108,12 @@ const firebaseConfig = {
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
     const [selectedAcai, setSelectedAcai] = useState(null);
     const [selectedCake, setSelectedCake] = useState(null); 
+    const [selectedDessert, setSelectedDessert] = useState(null); 
+    const [isDessertModalOpen, setIsDessertModalOpen] = useState(false); 
+    const [selectedCombo, setSelectedCombo] = useState(null); 
+    const [isComboModalOpen, setIsComboModalOpen] = useState(false); 
+    const [isSimpleConfirmModalOpen, setIsSimpleConfirmModalOpen] = useState(false); 
+    const [itemToConfirm, setItemToConfirm] = useState(null); 
     const [selectedOptions, setSelectedOptions] = useState({
         creme: null,
         frutas: [],
@@ -145,6 +153,42 @@ const firebaseConfig = {
         return () => unsubscribe();
     }, [firebaseConfig]); 
 
+     // --- NOVO: LÓGICA DE CONFIRMAÇÃO SIMPLES (SHAKE) ---
+    const handleOpenSimpleConfirmModal = (item) => {
+        // Esta função será chamada ao clicar em Shake, Brownie, Brigadeiro Morango.
+        
+        // Se for o Brownie ou Brigadeiro Ninho/Morango (que não tinham modal), 
+        // a lógica de Sobremesa (handleOpenDessertModal) vai rotear para cá.
+        // O Shake também roteará para cá através do renderShakeItem.
+
+        setItemToConfirm(item);
+        setIsSimpleConfirmModalOpen(true);
+    };
+
+    const handleCloseSimpleConfirmModal = () => {
+        setIsSimpleConfirmModalOpen(false);
+        setItemToConfirm(null);
+    };
+
+    // FUNÇÃO REVISADA: Agora esta função SÓ adiciona ao carrinho, depois de confirmado.
+    const handleAddSimpleItem = (item) => {
+        // Esta função é chamada PELO MODAL DE CONFIRMAÇÃO.
+        const novoPedido = {
+            tamanho: item.titulo, 
+            preco: item.preco,
+            tipoProduto: item.type,
+            creme: null, frutas: [], complementos: [], adicionais: [], caldas: null 
+        };
+
+        setPedidos(prevPedidos => {
+            const pedidosAtualizados = [...prevPedidos, novoPedido];
+            const novoTotal = pedidosAtualizados.reduce((total, pedido) => total + pedido.preco, 0);
+            setTotalPrice(novoTotal);
+            return pedidosAtualizados;
+        });
+        // Não fechar o modal aqui, pois o modal que a chama se fecha sozinho.
+    };
+    
     // --- FUNÇÕES DE MANIPULAÇÃO DE PEDIDOS DE AÇAÍ ---
     // A função handleSelectAcaiOptions deve ser atualizada para usar a nova estrutura de pedido
     const handleSelectAcaiOptions = (options, newAcaiPrice) => {
@@ -217,6 +261,72 @@ const firebaseConfig = {
     };
     // ----------------------------------------------------
 
+    // --- NOVO: FUNÇÕES DE MANIPULAÇÃO DE PEDIDOS DE COMBO ---
+    const handleOpenComboModal = (combo) => {
+        setSelectedCombo(combo);
+        setIsComboModalOpen(true);
+    };
+
+    const handleCloseComboModal = () => {
+        setIsComboModalOpen(false);
+        setSelectedCombo(null);
+    };
+
+    const handleSelectComboOptions = (selectedCakeOption) => {
+        const combo = selectedCombo;
+        const novoPedido = {
+            tamanho: combo.titulo, 
+            preco: combo.preco,
+            tipoProduto: 'Combo',
+            observacoes: `Bolo Escolhido: ${selectedCakeOption.titulo}`, 
+            creme: null, frutas: [], complementos: [], adicionais: [], caldas: null 
+        };
+        
+        setPedidos(prevPedidos => {
+            const pedidosAtualizados = [...prevPedidos, novoPedido];
+            const novoTotal = pedidosAtualizados.reduce((total, pedido) => total + pedido.preco, 0);
+            setTotalPrice(novoTotal);
+            return pedidosAtualizados;
+        });
+        handleCloseComboModal();
+    };
+    
+    // --- NOVO: FUNÇÕES DE MANIPULAÇÃO DE PEDIDOS DE SOBREMESA ---
+    const handleOpenDessertModal = (dessert) => {
+        // Se for o item com ID 'dessert3' (Ninho/Nutella), que tem a escolha de fruta, abra o modal.
+        if (dessert.id === 'dessert3') {
+            setSelectedDessert(dessert);
+            setIsDessertModalOpen(true);
+        } else {
+            // Se for Brownie ou Brigadeiro Ninho/Morango, adicione diretamente.
+            handleOpenSimpleConfirmModal(dessert);
+        }
+    };
+
+    const handleCloseDessertModal = () => {
+        setIsDessertModalOpen(false);
+        setSelectedDessert(null);
+    };
+    
+    const handleSelectDessertOption = (fruitOption) => {
+        const item = selectedDessert;
+        const novoPedido = {
+            tamanho: `${item.titulo} (${fruitOption})`, 
+            preco: item.preco,
+            tipoProduto: item.type,
+            observacoes: `Fruta Escolhida: ${fruitOption}`,
+            creme: null, frutas: [], complementos: [], adicionais: [], caldas: null 
+        };
+        
+        setPedidos(prevPedidos => {
+            const pedidosAtualizados = [...prevPedidos, novoPedido];
+            const novoTotal = pedidosAtualizados.reduce((total, pedido) => total + pedido.preco, 0);
+            setTotalPrice(novoTotal);
+            return pedidosAtualizados;
+        });
+        
+        handleCloseDessertModal();
+    };
     // --- LÓGICA DE CHECKOUT E RESET (MANTIDA) ---
     const handleFecharPedido = () => {
         if (pedidos.length === 0) return;
@@ -230,6 +340,10 @@ const firebaseConfig = {
     const resetPedido = () => {
         setSelectedAcai(null);
         setSelectedCake(null);
+        setSelectedDessert(null);
+        setSelectedCombo(null); 
+        setItemToConfirm(null);
+        setIsSimpleConfirmModalOpen(false);
         setSelectedOptions({
             creme: null,
             frutas: [],
@@ -240,6 +354,8 @@ const firebaseConfig = {
         setPedidos([]);
         setTotalPrice(0);
         setIsCheckoutOpen(false);
+        setIsDessertModalOpen(false); 
+        setIsComboModalOpen(false); 
     };
 
     const handleClearOrder = () => {
@@ -252,7 +368,7 @@ const firebaseConfig = {
     };
 
     useEffect(() => {
-        const isAnyModalOpen = isAcaiModalOpen || isCakeModalOpen;
+        const isAnyModalOpen = isAcaiModalOpen || isCakeModalOpen || isDessertModalOpen || isComboModalOpen;
         if (isAnyModalOpen) {
             document.body.classList.add('modal-open');
         } else {
@@ -262,7 +378,7 @@ const firebaseConfig = {
         return () => {
             document.body.classList.remove('modal-open');
         };
-    }, [isAcaiModalOpen, isCakeModalOpen]);
+    }, [isAcaiModalOpen, isCakeModalOpen, isDessertModalOpen, isComboModalOpen, isSimpleConfirmModalOpen]); 
 
 
     // Renderização do Cardápio de Açaí (Ajustado para o novo grid)
@@ -278,6 +394,22 @@ const firebaseConfig = {
                 </AcaiOptionContainer>
             ))}
         </AcaiOptionGrid>
+    );
+     // Renderização do Shake
+     const renderShakeItem = () => (
+        <CakeMenuContainer>
+            <CakeItemContainer 
+                key={SHAKE_OPTION.id} 
+                onClick={() => handleOpenSimpleConfirmModal(SHAKE_OPTION)} // CHAMA O MODAL
+            >
+                <CakeTextContent>
+                    <CakeTitle>{SHAKE_OPTION.titulo}</CakeTitle>
+                    <CakeDescription>{SHAKE_OPTION.descricao}</CakeDescription>
+                    <CakePrice>R$ {SHAKE_OPTION.preco.toFixed(2)}</CakePrice>
+                </CakeTextContent>
+                <CakeImageItem src={SHAKE_OPTION.image} alt={SHAKE_OPTION.titulo} /> 
+            </CakeItemContainer>
+        </CakeMenuContainer>
     );
 
     // Renderização do Cardápio de Bolos Vulcões (NOVO)
@@ -296,20 +428,52 @@ const firebaseConfig = {
             ))}
         </CakeMenuContainer>
     );
+     // Renderização do Cardápio de Combos (USANDO FUNÇÃO DE ABRIR MODAL)
+     const renderComboMenu = () => (
+        <CakeMenuContainer>
+            {COMBO_OPTIONS.map((combo) => (
+                <CakeItemContainer key={combo.id} onClick={() => handleOpenComboModal(combo)}>
+                    <CakeTextContent>
+                        <CakeTitle>{combo.titulo}</CakeTitle>
+                        <CakeDescription>{combo.descricao}</CakeDescription>
+                        <CakePrice>R$ {combo.preco.toFixed(2)}</CakePrice>
+                    </CakeTextContent>
+                    <CakeImageItem src={combo.image} alt={combo.titulo} /> 
+                </CakeItemContainer>
+            ))}
+        </CakeMenuContainer>
+    );
+
+    // Renderização do Cardápio de Sobremesas (USANDO FUNÇÃO DE ABRIR MODAL CONDICIONAL)
+    const renderDessertMenu = () => (
+        <CakeMenuContainer>
+            {DESSERT_OPTIONS.map((dessert) => (
+                <CakeItemContainer key={dessert.id} onClick={() => handleOpenDessertModal(dessert)}>
+                    <CakeTextContent>
+                        <CakeTitle>{dessert.titulo}</CakeTitle>
+                        <CakeDescription>{dessert.descricao}</CakeDescription>
+                        <CakePrice>R$ {dessert.preco.toFixed(2)}</CakePrice>
+                    </CakeTextContent>
+                    <CakeImageItem src={dessert.image} alt={dessert.titulo} /> 
+                </CakeItemContainer>
+            ))}
+        </CakeMenuContainer>
+    );
+
     const scrollToSection = (id) => {
         // 1. Encontrar o elemento pelo ID
         const section = document.getElementById(id);
         if (section) {
-            // 2. Rolar para a seção com animação suave
-            section.scrollIntoView({
-                behavior: 'smooth', 
-                block: 'start'      
-            });
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         if (id === 'acai-section') {
             setSelectedTab('Açaí do Wagão');
+        } else if (id === 'combos-section') {
+            setSelectedTab('Combos');
         } else if (id === 'bolos-section') {
             setSelectedTab('Bolos Vulcões');
+        } else if (id === 'sobremesas-section') {
+            setSelectedTab('Sobremesas');
         }
     };
     //const menuContent = selectedTab === 'Açaí do Wagão' ? renderAcaiMenu() : renderCakeMenu();
@@ -328,10 +492,22 @@ const firebaseConfig = {
                         Açaí do Wagão
                     </TabButton>
                     <TabButton 
+                        active={selectedTab === 'Combos'} 
+                        onClick={() => scrollToSection('combos-section')}
+                    >
+                        Combos
+                    </TabButton>
+                    <TabButton 
                         active={selectedTab === 'Bolos Vulcões'} 
                         onClick={() => scrollToSection('bolos-section')}
                     >
                         Bolos Vulcões
+                    </TabButton>
+                    <TabButton 
+                        active={selectedTab === 'Sobremesas'} 
+                        onClick={() => scrollToSection('sobremesas-section')}
+                    >
+                        Sobremesas
                     </TabButton>
                 </TabBar>
             </HeaderContainer>
@@ -341,11 +517,34 @@ const firebaseConfig = {
             ) : (
                 <>
                     <Content>
-                        <SectionContainer id="acai-section">
+                         {/* 1. SEÇÃO AÇAÍ */}
+                         <SectionContainer id="acai-section">
+                            <SectionTitle>Açaí do Wagão</SectionTitle>
                             {renderAcaiMenu()}
                         </SectionContainer>
+                        
+                        {/* 2. ITEM SHAKE */}
+                        <SectionContainer>
+                            <SectionTitle>Shakes</SectionTitle>
+                            {renderShakeItem()}
+                        </SectionContainer>
+
+                        {/* 3. SEÇÃO COMBOS */}
+                        <SectionContainer id="combos-section">
+                            <SectionTitle>Combos</SectionTitle>
+                            {renderComboMenu()}
+                        </SectionContainer>
+                        
+                        {/* 4. SEÇÃO BOLOS VULCÕES */}
                         <SectionContainer id="bolos-section">
+                            <SectionTitle>Bolos Vulcões</SectionTitle>
                             {renderCakeMenu()}
+                        </SectionContainer>
+
+                        {/* 5. SEÇÃO SOBREMESAS */}
+                        <SectionContainer id="sobremesas-section">
+                            <SectionTitle>Sobremesas</SectionTitle>
+                            {renderDessertMenu()}
                         </SectionContainer>
                     </Content>
 
@@ -367,7 +566,28 @@ const firebaseConfig = {
                         onSelectCake={handleSelectCake}
                         cake={selectedCake}
                     />
+                    <DessertModal
+                        isOpen={isDessertModalOpen}
+                        onClose={handleCloseDessertModal}
+                        onSelectOption={handleSelectDessertOption}
+                        dessert={selectedDessert}
+                    />
 
+                    <ComboModal
+                        isOpen={isComboModalOpen}
+                        onClose={handleCloseComboModal}
+                        onSelectOptions={handleSelectComboOptions}
+                        combo={selectedCombo}
+                        cakeOptions={CAKE_OPTIONS} 
+                    />
+
+                    <SimpleConfirmModal
+                        isOpen={isSimpleConfirmModalOpen}
+                        onClose={handleCloseSimpleConfirmModal}
+                        onConfirm={handleAddSimpleItem}
+                        item={itemToConfirm}
+                    />
+                    
                     {isCheckoutOpen && (
                         <CheckoutForm
                             pedidos={pedidos}
@@ -379,7 +599,7 @@ const firebaseConfig = {
                             appId={appId}
                         />
                     )}
-                    {!isAcaiModalOpen && !isCakeModalOpen && !isCheckoutOpen && (
+                     {!isAcaiModalOpen && !isCakeModalOpen && !isCheckoutOpen && !isDessertModalOpen && !isComboModalOpen && (
                         <Footer
                             totalPrice={totalPrice}
                             fecharPedido={handleFecharPedido}
@@ -600,4 +820,12 @@ const CakeImageItem = styled.img`
 const SectionContainer = styled.div`
   /* Apenas um wrapper para dar o ID */
   padding-bottom: 30px; /* Espaçamento entre as seções se necessário */
+`;
+
+const SectionTitle = styled.h2`
+    font-size: 1.8rem;
+    color: #4A148C; /* Roxo escuro para o título da seção */
+    text-align: center;
+    margin: 20px 0 15px;
+    padding: 0 20px;
 `;
