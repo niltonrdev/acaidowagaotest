@@ -44,7 +44,7 @@ const ACAL_OPTIONS = [
 const SHAKE_OPTION = { 
     id: 'shake1', 
     titulo: 'Shake de Açaí', 
-    descricao: 'Shake de Açaí (Pronto, sem adicionais)', 
+    descricao: 'Shake de Açaí batido com ninho e paçoca', 
     preco: 16.00, 
     image: shake, 
     type: 'Shake' 
@@ -112,6 +112,7 @@ const firebaseConfig = {
     const [isDessertModalOpen, setIsDessertModalOpen] = useState(false); 
     const [selectedCombo, setSelectedCombo] = useState(null); 
     const [isComboModalOpen, setIsComboModalOpen] = useState(false); 
+    const [selectedRefri, setSelectedRefri] = useState('Normal');
     const [isSimpleConfirmModalOpen, setIsSimpleConfirmModalOpen] = useState(false); 
     const [itemToConfirm, setItemToConfirm] = useState(null); 
     const [selectedOptions, setSelectedOptions] = useState({
@@ -270,15 +271,17 @@ const firebaseConfig = {
     const handleCloseComboModal = () => {
         setIsComboModalOpen(false);
         setSelectedCombo(null);
+        setSelectedRefri('Normal');
     };
 
-    const handleSelectComboOptions = (selectedCakeOption) => {
+    const handleSelectComboOptions = (selectedCakeOption, selectedRefriOption) => {
         const combo = selectedCombo;
+        const observacoes = `Bolo: ${selectedCakeOption.titulo} | Refrigerante: ${selectedRefriOption}`;
         const novoPedido = {
             tamanho: combo.titulo, 
             preco: combo.preco,
             tipoProduto: 'Combo',
-            observacoes: `Bolo Escolhido: ${selectedCakeOption.titulo}`, 
+            observacoes: observacoes, 
             creme: null, frutas: [], complementos: [], adicionais: [], caldas: null 
         };
         
@@ -579,6 +582,8 @@ const firebaseConfig = {
                         onSelectOptions={handleSelectComboOptions}
                         combo={selectedCombo}
                         cakeOptions={CAKE_OPTIONS} 
+                        selectedRefri={selectedRefri}
+                        setSelectedRefri={setSelectedRefri}
                     />
 
                     <SimpleConfirmModal
@@ -587,7 +592,7 @@ const firebaseConfig = {
                         onConfirm={handleAddSimpleItem}
                         item={itemToConfirm}
                     />
-                    
+
                     {isCheckoutOpen && (
                         <CheckoutForm
                             pedidos={pedidos}

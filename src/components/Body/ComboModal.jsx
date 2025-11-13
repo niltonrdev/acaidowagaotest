@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export default function ComboModal({ isOpen, onClose, onSelectOptions, combo, cakeOptions }) {
   const [selectedCake, setSelectedCake] = useState(null);
-
+  const [selectedRefri, setSelectedRefri] = useState('Normal');
   if (!isOpen || !combo || !cakeOptions) return null;
 
   const handleConfirm = () => {
@@ -13,8 +13,7 @@ export default function ComboModal({ isOpen, onClose, onSelectOptions, combo, ca
     }
     
     // Envia o objeto do bolo selecionado de volta para o App.jsx
-    onSelectOptions(selectedCake);
-    setSelectedCake(null); // Resetar estado após confirmação
+    onSelectOptions(selectedCake, selectedRefri);
     onClose();
   };
 
@@ -42,6 +41,22 @@ export default function ComboModal({ isOpen, onClose, onSelectOptions, combo, ca
             </CakeOptionItem>
           ))}
         </CakeOptionList>
+        
+        <OptionSelectionTitle>Escolha o Refrigerante:</OptionSelectionTitle>
+        <RefriSelector>
+            <RefriOption 
+                selected={selectedRefri === 'Normal'}
+                onClick={() => setSelectedRefri('Normal')}
+            >
+                Normal
+            </RefriOption>
+            <RefriOption 
+                selected={selectedRefri === 'Zero'}
+                onClick={() => setSelectedRefri('Zero')}
+            >
+                Zero Açúcar
+            </RefriOption>
+        </RefriSelector>
         
         <ConfirmButton onClick={handleConfirm} disabled={!selectedCake}>
           Adicionar Combo - R$ {combo.preco.toFixed(2)}
@@ -99,4 +114,28 @@ const ConfirmButton = styled.button`
   background: linear-gradient(to right, #6A3093, #8E44AD); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600; font-size: 1rem; width: 100%; cursor: pointer; transition: all 0.3s;
   &:disabled { background: #ccc; cursor: not-allowed; }
   &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 10px rgba(106, 48, 147, 0.3); }
+`;
+
+
+const RefriSelector = styled.div`
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+`;
+
+const RefriOption = styled.button`
+    flex: 1;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid ${({ selected }) => (selected ? '#4CAF50' : '#ddd')}; 
+    background-color: ${({ selected }) => (selected ? '#E8F5E9' : '#fff')};
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    color: ${({ selected }) => (selected ? '#1B5E20' : '#333')};
+    
+    &:hover {
+        background-color: #f0f0f0;
+    }
 `;
