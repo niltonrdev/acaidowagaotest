@@ -247,7 +247,11 @@ const firebaseConfig = {
 
     // --- FUNÇÕES DE MANIPULAÇÃO DE PEDIDOS DE BOLO ---
     const handleOpenCakeModal = (cake) => {
-        setSelectedCake(cake);
+        const cakeWithImage = {
+            ...cake,
+            image: IMAGE_MAP[cake.image] 
+        };
+        setSelectedCake(cakeWithImage);
         setIsCakeModalOpen(true);
     };
 
@@ -846,7 +850,7 @@ const SectionContainer = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-    font-size: 1.8rem;
+    font-size: 1.2em;
     color: #4A148C; /* Roxo escuro para o título da seção */
     text-align: center;
     margin: 20px 0 15px;
