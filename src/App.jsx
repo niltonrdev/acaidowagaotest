@@ -26,6 +26,8 @@ import brownie from './assets/brownie.jpeg';
 import brig_ninho_morango from './assets/brig_ninho_morango.jpeg'; 
 import brig_ninho_nutella from './assets/brig_ninho_nutella.jpeg'; 
 import shake from './assets/shake_acai.jpeg';  
+import pudim from './assets/pudim.jpeg'; 
+import surpresa_uva from './assets/surpresa_uva.jpeg'; 
 
 // Importações do Firebase
 import { initializeApp } from 'firebase/app';
@@ -77,13 +79,29 @@ const COMBO_OPTIONS = [
 ];
 const DESSERT_OPTIONS = [
     { id: 'dessert1', titulo: 'Brownie Tradicional', descricao: 'Delicioso Brownie tradicional', preco: 13.00, image: brownie, type: 'Sobremesa' },
-    { id: 'dessert2', titulo: 'Brigadeiro de Ninho c/ Morango', descricao: 'Brigadeiro de colher de Ninho com morango', preco: 14.00, image: brig_ninho_morango, type: 'Sobremesa' },
+    { id: 'dessert2', titulo: 'Brigadeiro de Ninho c/ Morango', descricao: 'Brigadeiro de colher de Ninho com morango', preco: 12.00, image: brig_ninho_morango, type: 'Sobremesa' },
     { 
         id: 'dessert3', 
         titulo: 'Brigadeiro de Ninho c/ Nutella', 
-        descricao: 'Brigadeiro de ninho com nutella (Escolha uma fruta: uva ou morango, informe qual na observação)', 
-        preco: 17.00, 
+        descricao: 'Brigadeiro de ninho com nutella, escolha uma fruta: uva ou morango', 
+        preco: 15.00, 
         image: brig_ninho_nutella,
+        type: 'Sobremesa' 
+    },
+    { 
+        id: 'dessert4', 
+        titulo: 'Pudim', 
+        descricao: 'Delicioso pudim de leite condensado', 
+        preco: 7.00, 
+        image: pudim,
+        type: 'Sobremesa' 
+    },
+    { 
+        id: 'dessert5', 
+        titulo: 'Surpresa de Uva', 
+        descricao: 'Creme de Ninho, Uva sem semente e chocolate cremoso', 
+        preco: 7.00, 
+        image: surpresa_uva,
         type: 'Sobremesa' 
     },
 ];
