@@ -199,16 +199,24 @@ export default function CheckoutForm({
                       <p><strong>{pedido.tamanho}</strong> - R$ {pedido.preco.toFixed(2)}</p>
                       <p style={{ fontSize: '0.8rem', fontStyle: 'italic', color: '#8E44AD' }}>Bolo Vulcão</p>
                   </>
-              ) : (
-                  <>
-                      <p><strong>Açaí {pedido.tamanho}</strong> - R$ {pedido.preco.toFixed(2)}</p>
-                      {pedido.creme && <p>Creme: {pedido.creme}</p>}
-                      {pedido.frutas.length > 0 && <p>Frutas: {pedido.frutas.join(', ')}</p>}
-                      {pedido.complementos.length > 0 && <p>Complementos: {pedido.complementos.join(', ')}</p>}
-                      {pedido.adicionais.length > 0 && <p>Adicionais: {pedido.adicionais.join(', ')}</p>}
-                      {pedido.caldas && <p>Calda: {pedido.caldas}</p>}
-                  </>
-              )}
+              ) : (pedido.tipoProduto === 'Shake' || pedido.tipoProduto === 'Combo' || pedido.tipoProduto === 'Sobremesa') ? (
+                <>
+                    <p><strong>{pedido.tamanho}</strong> - R$ {pedido.preco.toFixed(2)}</p>
+                    {pedido.observacoes && (
+                        <p style={{ fontSize: '0.8rem', color: '#555' }}>Detalhes: {pedido.observacoes}</p>
+                    )}
+                </>
+
+              ) : 
+              <>
+                  <p><strong>Açaí {pedido.tamanho}</strong> - R$ {pedido.preco.toFixed(2)}</p>
+                  {pedido.creme && <p>Creme: {pedido.creme}</p>}
+                  {pedido.frutas.length > 0 && <p>Frutas: {pedido.frutas.join(', ')}</p>}
+                  {pedido.complementos.length > 0 && <p>Complementos: {pedido.complementos.join(', ')}</p>}
+                  {pedido.adicionais.length > 0 && <p>Adicionais: {pedido.adicionais.join(', ')}</p>}
+                  {pedido.caldas && <p>Calda: {pedido.caldas}</p>}
+              </>
+              }
             </PedidoItem>
           ))}
           <TotalContainer>
@@ -346,22 +354,29 @@ export default function CheckoutForm({
               <h4>ITENS:</h4>
               {pedidos.map((pedido, index) => (
                 <Item key={index}>
-                  {pedido.tipoProduto === 'Bolo' ? (
+                    {pedido.tipoProduto === 'Bolo' ? (
+                        <>
+                            <p><strong>{pedido.tamanho}</strong> - R$ {pedido.preco.toFixed(2)}</p>
+                            <p style={{ fontSize: '0.8rem', fontStyle: 'italic', color: '#8E44AD' }}>Bolo Vulcão</p>
+                        </>
+                      ) : (pedido.tipoProduto === 'Shake' || pedido.tipoProduto === 'Combo' || pedido.tipoProduto === 'Sobremesa') ? (
+                        <>
+                            <p><strong>{pedido.tamanho}</strong> - R$ {pedido.preco.toFixed(2)}</p>
+                            {pedido.observacoes && (
+                                <p style={{ fontSize: '0.8rem', color: '#555' }}>Detalhes: {pedido.observacoes}</p>
+                            )}
+                        </>
+
+                      ) : 
                       <>
-                          <p><strong>{index + 1}. {pedido.tamanho} (Bolo Vulcão)</strong></p>
-                          <p><strong>Valor:</strong> R$ {pedido.preco.toFixed(2)}</p>
+                          <p><strong>Açaí {pedido.tamanho}</strong> - R$ {pedido.preco.toFixed(2)}</p>
+                          {pedido.creme && <p>Creme: {pedido.creme}</p>}
+                          {pedido.frutas.length > 0 && <p>Frutas: {pedido.frutas.join(', ')}</p>}
+                          {pedido.complementos.length > 0 && <p>Complementos: {pedido.complementos.join(', ')}</p>}
+                          {pedido.adicionais.length > 0 && <p>Adicionais: {pedido.adicionais.join(', ')}</p>}
+                          {pedido.caldas && <p>Calda: {pedido.caldas}</p>}
                       </>
-                  ) : (
-                      <>
-                          <p><strong>{index + 1}. Açaí {pedido.tamanho}</strong></p>
-                          {pedido.creme && <p>- Creme: {pedido.creme}</p>}
-                          {pedido.complementos.length > 0 && <p>- Complementos: {pedido.complementos.join(', ')}</p>}
-                          {pedido.adicionais.length > 0 && <p>- Adicionais: {pedido.adicionais.join(', ')}</p>}
-                          {pedido.frutas.length > 0 && <p>- Frutas: {pedido.frutas.join(', ')}</p>}
-                          {pedido.caldas && <p>- Calda: {pedido.caldas}</p>}
-                          <p><strong>Valor:</strong> R$ {pedido.preco.toFixed(2)}</p>
-                      </>
-                  )}
+                    }
                 </Item>
               ))}
             </Itens>
